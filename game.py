@@ -1,5 +1,5 @@
-X = 1
-O = 3
+X = 1 # starts all games
+O = 3 
 TIE = -1
 
 Players={
@@ -38,6 +38,17 @@ class Board:
         for i in range(9):
             if i > 0 and (i % 3) == 0:
                 s += '/'
+            s += '-' if (board & 3) == 0 else ('X' if (board & 3)
+                                               == X else 'O')
+            board >>= 2
+        return s
+
+    def toNice(self):
+        board = self.board
+        s = ''
+        for i in range(9):
+            if i > 0 and (i % 3) == 0:
+                s += '\n'
             s += '-' if (board & 3) == 0 else ('X' if (board & 3)
                                                == X else 'O')
             board >>= 2
@@ -116,7 +127,7 @@ class Board:
 
 
 class Game:
-    def __init__(self, board=None, turn=None, history=None):
+    def __init__(self, board=None, turn=None, history=None, movesHistory=None):
         if type(board) is int:
             self.board = Board(board)
         elif type(board) is Board:
@@ -124,14 +135,12 @@ class Game:
         else:
             self.board = Board()
 
-        turn = turn or (O if (len(self.board.emptySquares()) % 2 == 0) else X)
-        history = history or []
-
-        self.turn = turn
-        self.history = history
+        self.turn = turn or (O if (len(self.board.emptySquares()) % 2 == 0) else X)
+        self.history = history or []
+        self.movesHistory = movesHistory or []
 
     def clone(self):
-        return Game(self.board, self.turn, self.history.copy())
+        return Game(self.board, self.turn, self.history.copy(), self.movesHistory.copy())
 
     def equals(self, other):
         # Ignore history.
@@ -150,7 +159,8 @@ class Game:
         return self.board.isEmpty()
 
     def move(self, square):
-        self.history.append(self.board)
+        self.history.append(self.board.board)
+        self.movesHistory.append(square)
         self.board = self.board.move(square, self.turn)
         self.turn ^= 2
 
@@ -161,24 +171,20 @@ class Game:
     def winner(self):
         return self.board.winner()
 
-def play(x, o):
-    players = {}
-    players[X] = x
-    players[O] = o
+    def play(self, x, o):
+        players = {}
+        players[X] = x
+        players[O] = o
 
-    game = Game()
+        winner = None
 
-    winner = None
+        while True:
+            move = players[self.turn].getMove(self)
+            if move < 0 or move >= 9 or self.getPiece(move) != 0 :
+                text ="AI chose invalid move " + str(move)+ " in " + self.toString()
+                raise Exception(text)
 
-    # print(game.toString())
-    while True:
-        move = players[game.turn].getMove(game)
-        if move < 0 or move >= 9 or game.getPiece(move) != 0 :
-            text ="AI chose invalid move " + str(move)+ " in " + game.toString()
-            raise Exception(text)
-
-        game.move(move)
-        # print(game.toString())
-        winner = game.winner()
-        if winner:
-            return Players[winner]
+            self.move(move)
+            winner = self.winner()
+            if winner:
+                return Players[winner]
