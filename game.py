@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import gym
 from gym.envs.toy_text import discrete
 
 X = 1 # starts all games
@@ -16,6 +17,8 @@ class Board:
     def __init__(self, board=None):
         if type(board) is int:
             self.board = board
+        elif type(board) is np.int32:
+            self.board = np.asscalar(board)
         elif type(board) is Board:
             self.board = board.board
         else:
@@ -221,7 +224,7 @@ class TicTacToeEnv(gym.Env):
 
 
 
-class TicTacToeEnv(discrete.DiscreteEnv):
+class XTicTacToeEnv(discrete.DiscreteEnv):
     """
     TODO
     """

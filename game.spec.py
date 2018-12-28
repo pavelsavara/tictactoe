@@ -1,6 +1,5 @@
 import unittest
-from game import Game
-from game import Board
+from game import Board, Game
 from agents import RandomAgent, SmartAgent
 
 

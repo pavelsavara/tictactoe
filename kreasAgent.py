@@ -29,7 +29,11 @@ def extractMove(game, step):
     
     category = bitindex(square)
     features = bitfield(board)
-    return (features, category) # , step, board, final, square
+    return (features, category, step, board, final, square) # 
+
+def extractBoard(board):
+    features = bitfield(board)
+    return features 
 
 
 class KerasModel:
@@ -70,23 +74,37 @@ class KerasModel:
                         batch.append(extractMove(game, j))
         features = numpy.asarray([row[0] for row in batch]).astype(float)
         labels = numpy.asarray([row[1] for row in batch]).astype(float)
+        meta = numpy.asarray([(row[2],row[3],row[4],row[5]) for row in batch])
+        print ('game'+str(dataSize))
 
-        return (features, labels)
+        return (features, labels, meta)
     
     def train(self, batchSize=32, dataSize=3200, epochs=10):
         trainingSamples  = self.samples(dataSize)
         validationSamples  = self.samples(int(dataSize/5))
+        valSamples2 = (validationSamples[0],validationSamples[1])
         print(trainingSamples[0][0])
         print(trainingSamples[1][0])
-        self.model.fit(trainingSamples[0], trainingSamples[1], epochs=10, batch_size=batchSize, validation_data=validationSamples)
+        self.model.fit(trainingSamples[0], trainingSamples[1], epochs=10, batch_size=batchSize, validation_data=valSamples2)
+
+    def predict(self, board):
+        batch = []
+        batch.append(extractBoard(board))
+        features = numpy.asarray(batch).astype(float)
+        label = self.model.predict_classes(features)
+        return label
+
 
 class KerasAgent:
-    def __init__(self):
-        return
+    def __init__(self, model):
+        self.model=model
 
     def getMoves(self, game):
         return game.emptySquares()
 
     def getMove(self, game):
-        moves = self.getMoves(game)
-        return moves[0]
+        # moves = self.getMoves(game)
+        square = int(self.model.predict(game.board.board)[0])
+        #print(square)
+        return square
+
