@@ -94,6 +94,8 @@ class KerasModel:
         label = self.model.predict_classes(features)
         return label
 
+    def save(self):
+        self.model.save() #TODO
 
 class KerasAgent:
     def __init__(self, model):
