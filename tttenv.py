@@ -18,25 +18,27 @@ class TicTacToeEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def step(self, move):
+    def step(self, action):
+        move = int(action)
         emptySqares = self.game.emptySquares()
+        nice = self.game.toNice()
         if move not in emptySqares:
             self.reset()
-            return self._get_observation(), -1.0, True, 
+            return self._get_observation(), -1.0, True, {'reason': 'bad move!', 'move':move, 'nice':nice }
         self.game.move(move)
         winner = self.game.winner()
 
         if winner == TIE:
             self.reset()
-            return self._get_observation(), 0.01, True, {'reason': 'tie1!'}
+            return self._get_observation(), 0.01, True, {'reason': 'tie1!', 'move':move, 'nice':nice }
         
         if winner == self.game.turn:
             self.reset()
-            return self._get_observation(), -0.99, True, {'reason': 'you loose1!'}
+            return self._get_observation(), -0.99, True, {'reason': 'you loose1!', 'move':move, 'nice':nice }
 
         if winner:
             self.reset()
-            return self._get_observation(), 1.0, True, {'reason': 'you win1!'}
+            return self._get_observation(), 1.0, True, {'reason': 'you win1!', 'move':move, 'nice':nice }
 
         oponentmove = self.oponent.getMove(self.game)
 
@@ -45,17 +47,17 @@ class TicTacToeEnv(gym.Env):
 
         if winner == TIE:
             self.reset()
-            return self._get_observation(), 0.01, True, {'reason': 'tie2!'}
+            return self._get_observation(), 0.01, True, {'reason': 'tie2!', 'move':move, 'nice':nice }
 
         if winner == self.game.turn:
             self.reset()
-            return self._get_observation(), 1.0, True, {'reason': 'you win2!'}
+            return self._get_observation(), 1.0, True, {'reason': 'you win2!', 'move':move, 'nice':nice }
 
         if winner:
             self.reset()
-            return self._get_observation(), -0.99, True, {'reason': 'you loose2!'}
+            return self._get_observation(), -0.99, True, {'reason': 'you loose2!', 'move':move, 'nice':nice }
 
-        return self._get_observation(), 0.0, False, {'reason': 'not settled'}
+        return self._get_observation(), 0.0001, False, {'reason': 'not settled', 'move':move, 'nice':nice }
 
     def render(self, mode='human'):
         outfile = StringIO() if mode == 'ansi' else sys.stdout
@@ -65,7 +67,7 @@ class TicTacToeEnv(gym.Env):
             return outfile
 
     def _get_observation(self):
-        return self.game.board.allSquares012()
+        return np.array(self.game.board.allSquares012())
 
     def reset(self):
         self.game = Game()

@@ -167,6 +167,9 @@ class Game:
     def toString(self):
         return "" + ("X" if self.turn == X else "O") + "@" + self.board.toString()
 
+    def toNice(self):
+        return self.board.toNice()
+
     def toHistoryString(self):
         sb=""
         for h in self.history:
