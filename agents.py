@@ -1,14 +1,9 @@
 import math
-import random
 from collections import namedtuple
 from game import X
 from game import O
 from game import TIE
-
-
-def arrayRand(a):
-    idx = math.floor(random.random() * len(a))
-    return a[idx]
+import numpy as np
 
 
 TopScoringRes = namedtuple('TopScoringRes', ['score', 'moves'])
@@ -40,20 +35,23 @@ def sumsign(a, b, c):
 
 
 class RandomAgent:
+    def __init__(self, randomState=None):
+        self.randomState = randomState if randomState is not None else np.random.RandomState()
+
     def getMoves(self, game):
         return game.emptySquares()
 
     def getMove(self, game):
         moves = self.getMoves(game)
-        return arrayRand(moves)
-
+        return int(self.randomState.choice(moves))
 
 class SmartAgent:
-    def __init__(self, maxDepth=None):
+    def __init__(self, randomState=None, maxDepth=None):
         self.maxDepth = maxDepth or 7
+        self.randomState = randomState if randomState is not None else np.random.RandomState()
 
     def getMove(self, game):
-        return arrayRand(self.getMoves(game))
+        return int(self.randomState.choice(self.getMoves(game)))
 
     def getMoves(self, game):
         if (game.isEmpty()):
