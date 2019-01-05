@@ -63,7 +63,7 @@ class KerasModel:
             if i%100 == 0 : print ('game'+str(i))
             game = Game()
             x = SmartAgent() if random.randint(0, 10) % 2 == 0 else RandomAgent()
-            y = SmartAgent() if random.randint(0, 10) % 2 == 0 else RandomAgent()
+            y = SmartAgent() if random.randint(0, 10) % 2 == 0 or type(x) is RandomAgent else RandomAgent()
             winner = game.play(x, y)
             if (winner == 'X'):
                 for j in range(0, len(game.history), 2):

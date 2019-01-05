@@ -162,7 +162,7 @@ class Game:
     def toHistoryString(self):
         sb=""
         for h in self.history:
-            sb=sb+', '+h.toString()
+            sb=sb+'\n\n'+Board(h).toNice()
         return sb 
 
     def emptySquares(self):
