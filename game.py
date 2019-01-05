@@ -159,6 +159,12 @@ class Game:
     def toString(self):
         return "" + ("X" if self.turn == X else "O") + "@" + self.board.toString()
 
+    def toHistoryString(self):
+        sb=""
+        for h in self.history:
+            sb=sb+', '+h.toString()
+        return sb 
+
     def emptySquares(self):
         return self.board.emptySquares()
 
@@ -188,7 +194,7 @@ class Game:
         while True:
             move = players[self.turn].getMove(self)
             if move < 0 or move >= 9 or self.getPiece(move) != 0 :
-                text ="AI chose invalid move " + str(move)+ " in " + self.toString()
+                text ="AI chose invalid move " + str(move)+ " in " + self.toString() + ' history ' + str(len(self.movesHistory))
                 raise Exception(text)
 
             self.move(move)

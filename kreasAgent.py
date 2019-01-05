@@ -65,13 +65,16 @@ class KerasModel:
             x = SmartAgent() if random.randint(0, 10) % 2 == 0 else RandomAgent()
             y = SmartAgent() if random.randint(0, 10) % 2 == 0 else RandomAgent()
             winner = game.play(x, y)
-            if (winner != 'T'):
-                if (winner == 'X'):
-                    for j in range(0, len(game.history), 2):
-                        batch.append(extractMove(game, j))
-                else:
-                    for j in range(1, len(game.history), 2):
-                        batch.append(extractMove(game, j))
+            if (winner == 'X'):
+                for j in range(0, len(game.history), 2):
+                    batch.append(extractMove(game, j))
+            else: # this is y winner moves or y tie moves
+                for j in range(1, len(game.history), 2):
+                    batch.append(extractMove(game, j))
+
+            if len(game.history) == 9:
+                batch.append(extractMove(game, 8))
+
         features = numpy.asarray([row[0] for row in batch]).astype(float)
         labels = numpy.asarray([row[1] for row in batch]).astype(float)
         meta = numpy.asarray([(row[2],row[3],row[4],row[5]) for row in batch])
@@ -95,7 +98,10 @@ class KerasModel:
         return label
 
     def save(self):
-        self.model.save() #TODO
+        self.model.save_weights('./model/tictactoe.tfmodel')
+
+    def load(self):
+        self.model.load_weights('./model/tictactoe.tfmodel')
 
 class KerasAgent:
     def __init__(self, model):

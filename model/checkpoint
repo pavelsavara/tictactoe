@@ -1,0 +1,2 @@
+model_checkpoint_path: "tictactoe.tfmodel"
+all_model_checkpoint_paths: "tictactoe.tfmodel"
