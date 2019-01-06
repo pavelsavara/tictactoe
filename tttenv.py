@@ -8,7 +8,7 @@ from agents import SmartAgent, RandomAgent
 
 class TicTacToeEnv(gym.Env):
     def __init__(self):
-        self.reward_range = (-1, 1)
+        self.reward_range = (-1000, 1)
         self.action_space = spaces.Discrete(9)
         self.observation_space = spaces.Box(low=0, high=2, shape=(9,),dtype=np.int32)
         self.seed()
@@ -24,7 +24,7 @@ class TicTacToeEnv(gym.Env):
         nice = self.game.toNice()
         if move not in emptySqares:
             self.reset()
-            return self._get_observation(), -1.0, True, {'reason': 'bad move!', 'move':move, 'nice':nice }
+            return self._get_observation(), -100.0, True, {'reason': 'bad move!', 'move':move, 'nice':nice }
         self.game.move(move)
         winner = self.game.winner()
 
@@ -34,7 +34,7 @@ class TicTacToeEnv(gym.Env):
         
         if winner == self.game.turn:
             self.reset()
-            return self._get_observation(), -0.99, True, {'reason': 'you loose1!', 'move':move, 'nice':nice }
+            return self._get_observation(), -1, True, {'reason': 'you loose1!', 'move':move, 'nice':nice }
 
         if winner:
             self.reset()
@@ -72,6 +72,7 @@ class TicTacToeEnv(gym.Env):
     def reset(self):
         self.game = Game()
         self.oponent = self.np_random.choice([RandomAgent(self.np_random),SmartAgent(self.np_random)])
+        #self.oponent = RandomAgent(self.np_random)
         if self.np_random.choice([0,1]) == 1 :
             oponentmove = self.oponent.getMove(self.game)
             self.game.move(oponentmove)
