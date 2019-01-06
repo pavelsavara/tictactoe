@@ -18,4 +18,4 @@ import spinup.utils.test_policy as test_policy
 #env, get_action = test_policy.load_policy('d:/tmp/experiments/1546722277', '', False)
 #test_policy.run_policy(env, get_action, 10, 10, False)
 
-vpg.vpg.vpg(lambda:tttenv.TicTacToeEnv(), steps_per_epoch=50, epochs=10000)
+vpg.vpg.vpg(lambda:tttenv.TicTacToeEnv(), steps_per_epoch=200, epochs=10000)
