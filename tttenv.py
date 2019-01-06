@@ -10,7 +10,7 @@ class TicTacToeEnv(gym.Env):
     def __init__(self):
         self.reward_range = (-100, 1)
         self.action_space = spaces.Discrete(9)
-        self.observation_space = spaces.Box(low=0, high=2, shape=(9,),dtype=np.int32)
+        self.observation_space = spaces.Box(low=0, high=1, shape=(18,),dtype=np.bool)
         self.seed()
         return
     
@@ -23,21 +23,17 @@ class TicTacToeEnv(gym.Env):
         emptySqares = self.game.emptySquares()
         nice = self.game.toNice()
         if move not in emptySqares:
-            self.reset()
             return self._get_observation(), -100.0, True, {'reason': 'badmove', 'move':move, 'nice':nice, 'winner':0 }
         self.game.move(move)
         winner = self.game.winner()
 
         if winner == TIE:
-            self.reset()
             return self._get_observation(), 0.01, True, {'reason': 'tie', 'move':move, 'nice':nice , "winner":1}
         
         if winner == self.game.turn:
-            self.reset()
             return self._get_observation(), -1, True, {'reason': 'loose', 'move':move, 'nice':nice , "winner":2}
 
         if winner:
-            self.reset()
             return self._get_observation(), 1.0, True, {'reason': 'win', 'move':move, 'nice':nice , "winner":3}
 
         oponentmove = self.oponent.getMove(self.game)
@@ -46,15 +42,12 @@ class TicTacToeEnv(gym.Env):
         winner = self.game.winner()
 
         if winner == TIE:
-            self.reset()
             return self._get_observation(), 0.01, True, {'reason': 'tie', 'move':move, 'nice':nice , "winner":1}
 
         if winner == self.game.turn:
-            self.reset()
             return self._get_observation(), 1.0, True, {'reason': 'win', 'move':move, 'nice':nice , "winner":3}
 
         if winner:
-            self.reset()
             return self._get_observation(), -0.99, True, {'reason': 'loose', 'move':move, 'nice':nice , "winner":2}
 
         return self._get_observation(), 0.0001, False, {'reason': 'move', 'move':move, 'nice':nice , "winner":4}
@@ -67,7 +60,8 @@ class TicTacToeEnv(gym.Env):
             return outfile
 
     def _get_observation(self):
-        return np.array(self.game.board.allSquares012())
+        b="{0:018b}".format(self.game.board.board)
+        return np.array([1 if digit == '1' else 0 for digit in b])
 
     def reset(self):
         self.game = Game()
